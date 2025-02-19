@@ -3,9 +3,11 @@ function extractProjectID(url) {
     return match ? match[1] : null;
 }
 
-function loadProject() {
-    const input = document.getElementById("scratch-url").value;
-    const projectId = extractProjectID(input);
+function loadProject(projectId = null) {
+    let input = document.getElementById("scratch-url").value;
+    if (!projectId) {
+        projectId = extractProjectID(input);
+    }
 
     if (!projectId) {
         alert("Invalid Scratch project URL!");
@@ -15,11 +17,49 @@ function loadProject() {
     const playerContainer = document.getElementById("player-container");
     playerContainer.innerHTML = ""; // Clear previous project
 
-    const stage = new P.player.Stage();
-    stage.loadProjectId(projectId).then(() => {
-        stage.start();
-        playerContainer.appendChild(stage.root);
-    }).catch(error => {
-        alert("Error loading project: " + error.message);
-    });
+    // Create an iframe to load Forkphorus
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://forkphorus.github.io/embed#${projectId}`;
+    iframe.width = "480";
+    iframe.height = "360";
+    iframe.allowFullscreen = true;
+    iframe.style.border = "none";
+    iframe.id = "scratch-iframe";
+
+    playerContainer.appendChild(iframe);
+
+    // Show buttons
+    document.getElementById("fullscreen-btn").style.display = "inline-block";
+    document.getElementById("new-tab-btn").style.display = "inline-block";
+
+    // Store project ID in the URL hash for direct access
+    window.location.hash = `#${projectId}`;
 }
+
+function enterFullscreen() {
+    const iframe = document.getElementById("scratch-iframe");
+    if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+    } else if (iframe.mozRequestFullScreen) { // Firefox
+        iframe.mozRequestFullScreen();
+    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        iframe.webkitRequestFullscreen();
+    } else if (iframe.msRequestFullscreen) { // IE/Edge
+        iframe.msRequestFullscreen();
+    }
+}
+
+function openInNewTab() {
+    const projectId = window.location.hash.substring(1) || extractProjectID(document.getElementById("scratch-url").value);
+    if (projectId) {
+        window.open(`https://forkphorus.github.io/embed#${projectId}`, "_blank");
+    }
+}
+
+// Check if the page was loaded with a project ID in the URL
+window.onload = function () {
+    const projectId = window.location.hash.substring(1);
+    if (projectId) {
+        loadProject(projectId);
+    }
+};
