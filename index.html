@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ScratchBlast</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://forkphorus.github.io/phosphorus.js"></script>
 </head>
 <body>
     <div class="container">
@@ -13,7 +12,15 @@
         <p>Enter a Scratch project URL to run it with JavaScript.</p>
         <input type="text" id="scratch-url" placeholder="Enter Scratch project URL">
         <button onclick="loadProject()">Run Project</button>
-        <div id="player-container"></div>
+
+        <div id="player-container">
+            <!-- Forkphorus iframe will be inserted here -->
+        </div>
+
+        <div class="buttons">
+            <button id="fullscreen-btn" onclick="enterFullscreen()" style="display: none;">Fullscreen</button>
+            <button id="new-tab-btn" onclick="openInNewTab()" style="display: none;">Open in New Tab</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
